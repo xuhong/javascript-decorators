@@ -1,34 +1,19 @@
-> This file is under active development. Refer to `interop/reusability.md` for the
-> most up to date description.
 > 当前文件处在活跃的开发状态。最新的描述请查看 `interop/reusability.md`。
-# Summary
+
 # 概述
-Decorators make it possible to annotate and modify classes and properties at
-design time.
 装饰器使我们在设计类和属性时注释和改变它们成为可能。
 
-While ES5 object literals support arbitrary expressions in the value position,
-ES6 classes only support literal functions as values. Decorators restore the
-ability to run code at design time, while maintaining a declarative syntax.
+尽管ES5 对象字面量字段的值支持任意的表达式，但 ES6 的类只支持作为值得函数字面量。装饰器使 ES6 重新拥有了在设计时运行代码的能力，同时保持声明式语法。
 
-ES5 对象字面量字段的值支持任意的表达式，但 ES6 的类只支持作为值得函数字面量。装饰器使 ES6 重新拥有了在设计时运行代码的能力，同时保持声明式语法。
-
-# Detailed Design
-# 实现原理
-A decorator is:
-
-* an expression
-* that evaluates to a function
-* that takes the target, name, and decorator descriptor as arguments
-* and optionally returns a decorator descriptor to install on the target object
+# 实现细节
 
 一个装饰器是：
+
 * 一个表达式
 * 对函数进行求值运算
 * 接受目标、名称和装饰器描述作为参数
 * 返回准备安装到目标对象上的装饰器的描述[可选]
 
-Consider a simple class definition:
 考虑定义一个简单的类：
 
 ```js
@@ -37,8 +22,6 @@ class Person {
 }
 ```
 
-Evaluating this class results in installing the `name` function onto
-`Person.prototype`, roughly like this:
 对这个类进行求值会把 `name` 函数安装到 `Person.prototype` 上，大致如下：
 
 ```js
@@ -50,7 +33,6 @@ Object.defineProperty(Person.prototype, 'name', {
 });
 ```
 
-A decorator precedes the syntax that defines a property:
 装饰器放在属性定义之前：
 
 ```js
@@ -60,8 +42,6 @@ class Person {
 }
 ```
 
-Now, before installing the descriptor onto `Person.prototype`, the engine first
-invokes the decorator:
 现在，在安装描述符到 `Person.prototype` 之前，会调用装饰器：
 
 ```js
@@ -81,10 +61,8 @@ function defineDecoratedProperty(target, { initializer, enumerable, configurable
 }
 ```
 
-The has an opportunity to intercede before the relevant `defineProperty` actually occurs.
 现在在相应的 `defineProperty` 真正调用之前，我们有机会改变类的属性。
 
-A decorator that precedes syntactic getters and/or setters operates on an accessor description:
 装饰器放在 getters 和/或 setters 之前影响属性存取操作：
 
 ```js
@@ -106,8 +84,6 @@ function nonenumerable(target, name, description) {
 }
 ```
 
-A more detailed example illustrating a simple decorator that memoizes an
-accessor.
 一个更详细的例子演示一个记住存取器的简单装饰器：
 
 ```js
@@ -145,8 +121,6 @@ function memoizationFor(obj) {
 }
 ```
 
-It is also possible to decorate the class itself. In this case, the decorator
-takes the target constructor.
 装饰类也是可以的。这种情况下，装饰器接受目标构造器作为参数。
 
 ```js
@@ -160,8 +134,6 @@ function annotation(target) {
 }
 ```
 
-Since decorators are expressions, decorators can take additional arguments and
-act like a factory.
 因为装饰器是表达式，所以装饰器可以像工厂函数一样使用接受额外的参数。
 
 ```js
@@ -175,7 +147,6 @@ function isTestable(value) {
 }
 ```
 
-The same technique could be used on property decorators:
 属性装饰器也可以这样用：
 
 ```js
@@ -196,18 +167,16 @@ Because descriptor decorators operate on targets, they also naturally work on
 static methods. The only difference is that the first argument to the decorator
 will be the class itself (the constructor) rather than the prototype, because
 that is the target of the original `Object.defineProperty`.
-因为描述符装饰器作用于目标，它们自然也可以应用在静态防范上。唯一的区别就是传入装饰器的第一个参数将会是类本省（构造器）而不是原型，因为原型是原始的 `Object.defineProperty` 的目标。
+因为描述符装饰器作用于目标，它们自然也可以应用在静态方法上。唯一的区别就是传入装饰器的第一个参数将会是类本身（构造器）而不是原型，因为原型是原始的 `Object.defineProperty` 的目标。
 
 
-For the same reason, descriptor decorators work on object literals, and pass
-the object being created to the decorator.
 基于同样的原因，描述符装饰器也可以用于对象字面量，把需要被创建的对象传递给装饰器。
 
-# Desugaring
+# 去糖 
 
-## Class Declaration
+## 申明类 
 
-### Syntax
+### 语法
 
 ```js
 @F("color")
@@ -216,7 +185,7 @@ class Foo {
 }
 ```
 
-### Desugaring (ES6)
+### 去糖 (ES6)
 
 ```js
 var Foo = (function () {
@@ -228,7 +197,7 @@ var Foo = (function () {
 })();
 ```
 
-### Desugaring (ES5)
+### 去糖 (ES5)
 
 ```js
 var Foo = (function () {
@@ -240,9 +209,9 @@ var Foo = (function () {
 })();
 ```
 
-## Class Method Declaration
+## 定义类的方法 
 
-### Syntax
+### 语法 
 
 ```js
 class Foo {
@@ -252,7 +221,7 @@ class Foo {
 }
 ```
 
-### Desugaring (ES6)
+###  (ES6)
 
 ```js
 var Foo = (function () {
@@ -269,7 +238,7 @@ var Foo = (function () {
 })();
 ```
 
-### Desugaring (ES5)
+### 去糖 (ES5)
 
 ```js
 var Foo = (function () {
@@ -286,9 +255,9 @@ var Foo = (function () {
 })();
 ```
 
-## Class Accessor Declaration
+## 定义类的存储器 
 
-### Syntax
+### 语法 
 
 ```js
 class Foo {
@@ -299,7 +268,7 @@ class Foo {
 }
 ```
 
-### Desugaring (ES6)
+### 去糖 (ES6)
 
 ```js
 var Foo = (function () {
@@ -317,7 +286,7 @@ var Foo = (function () {
 })();
 ```
 
-### Desugaring (ES5)
+### 去糖 (ES5)
 
 ```js
 var Foo = (function () {
@@ -338,9 +307,9 @@ var Foo = (function () {
 })();
 ```
 
-## Object Literal Method Declaration
+### 定义对象字面量的方法
 
-### Syntax
+### 语法 
 
 ```js
 var o = {
@@ -350,7 +319,7 @@ var o = {
 }
 ```
 
-### Desugaring (ES6)
+### 去糖 (ES6)
 
 ```js
 var o = (function () {
@@ -367,7 +336,7 @@ var o = (function () {
 })();
 ```
 
-### Desugaring (ES5)
+###  (ES5)
 
 ```js
 var o = (function () {
