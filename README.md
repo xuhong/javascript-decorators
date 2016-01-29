@@ -163,14 +163,9 @@ function enumerable(value) {
 }
 ```
 
-Because descriptor decorators operate on targets, they also naturally work on
-static methods. The only difference is that the first argument to the decorator
-will be the class itself (the constructor) rather than the prototype, because
-that is the target of the original `Object.defineProperty`.
 因为描述符装饰器作用于目标，它们自然也可以应用在静态方法上。唯一的区别就是传入装饰器的第一个参数将会是类本身（构造器）而不是原型，因为原型是原始的 `Object.defineProperty` 的目标。
 
-
-基于同样的原因，描述符装饰器也可以用于对象字面量，把需要被创建的对象传递给装饰器。
+基于同样的原因，描述符装饰器也可以用于对象字面量，只要把需要被创建的对象传递给装饰器。
 
 # 去糖 
 
@@ -221,7 +216,7 @@ class Foo {
 }
 ```
 
-###  (ES6)
+### 去糖 (ES6)
 
 ```js
 var Foo = (function () {
@@ -353,9 +348,9 @@ var o = (function () {
 })();
 ```
 
-## Object Literal Accessor Declaration
+## 定义对象字面量存取器
 
-### Syntax
+### 语法 
 
 ```js
 var o = {
@@ -366,7 +361,7 @@ var o = {
 }
 ```
 
-### Desugaring (ES6)
+### 去糖 (ES6)
 
 ```js
 var o = (function () {
@@ -384,7 +379,7 @@ var o = (function () {
 })();
 ```
 
-### Desugaring (ES5)
+### 去糖 (ES5)
 
 ```js
 var o = (function () {
@@ -405,7 +400,7 @@ var o = (function () {
 })();
 ```
 
-# Grammar
+# 文法 
 
 &emsp;&emsp;*DecoratorList*<sub> [Yield]</sub>&emsp;:  
 &emsp;&emsp;&emsp;*DecoratorList*<sub> [?Yield]opt</sub>&emsp; *Decorator*<sub> [?Yield]</sub>
@@ -454,8 +449,4 @@ NOTE	The production *CoverMemberExpressionSquareBracketsAndComputedPropertyName*
 &emsp;&emsp;&emsp;*DecoratorList*<sub> [?Yield]opt</sub>&emsp;`static`&emsp;*MethodDefinition*<sub> [?Yield]</sub>
 
 # Notes
-
-In order to more directly support metadata-only decorators, a desired feature
-for static analysis, the TypeScript project has made it possible for its users
-to define [ambient decorators](https://github.com/jonathandturner/brainstorming/blob/master/README.md#c6-ambient-decorators)
-that support a restricted syntax that can be properly analyzed without evaluation.
+为了更直接的支持只有元数据的装饰器，满足未来可能需要的静态分析，TypeScript 项目让它的使用者可以定义[环境装饰器](https://github.com/jonathandturner/brainstorming/blob/master/README.md#c6-ambient-decorators)，它支持一种严格的语法，可以不进行求值就能被正确的分析。
